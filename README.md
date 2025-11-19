@@ -285,6 +285,83 @@ const taskId = $json.data.task_id;
 | `video_type` | string | "all" | Тип: all, video, short, live |
 | `date_filter` | object | null | Фильтр по датам |
 
+## Фильтры по датам
+
+Для парсинга по расписанию доступны удобные относительные периоды, которые автоматически вычисляют даты при запуске.
+
+### Относительные периоды
+
+| Период | Описание |
+|--------|----------|
+| `last_hour` | Последний час |
+| `last_24_hours` | Последние 24 часа |
+| `last_3_days` | Последние 3 дня |
+| `last_week` | Последние 7 дней |
+| `last_2_weeks` | Последние 14 дней |
+| `last_month` | Последние 30 дней |
+| `last_3_months` | Последние 90 дней |
+| `last_year` | Последние 365 дней |
+| `today` | Сегодня (с 00:00) |
+| `this_week` | Эта неделя (с понедельника) |
+| `this_month` | Этот месяц (с 1-го числа) |
+| `custom` | Свои даты (date_from, date_to) |
+
+### Примеры использования
+
+**Ежедневный парсинг (последние 24 часа):**
+```json
+{
+  "task_type": "channel",
+  "input_data": "https://www.youtube.com/@channelname",
+  "options": {
+    "date_filter": {
+      "period": "last_24_hours"
+    },
+    "max_results": 50
+  }
+}
+```
+
+**Еженедельный парсинг:**
+```json
+{
+  "task_type": "search",
+  "input_data": "python tutorial",
+  "options": {
+    "date_filter": {
+      "period": "last_week"
+    },
+    "max_results": 100
+  }
+}
+```
+
+**С конкретными датами:**
+```json
+{
+  "task_type": "channel",
+  "input_data": "https://www.youtube.com/@channelname",
+  "options": {
+    "date_filter": {
+      "period": "custom",
+      "date_from": "2024-11-01T00:00:00",
+      "date_to": "2024-11-15T23:59:59"
+    }
+  }
+}
+```
+
+**Только сегодняшние видео:**
+```json
+{
+  "options": {
+    "date_filter": {
+      "period": "today"
+    }
+  }
+}
+```
+
 ## Статусы задач
 
 | Статус | Описание |
