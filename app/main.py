@@ -9,12 +9,11 @@ from typing import Optional, List
 
 from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
 
 from . import __version__
 from .models import (
     TaskRequest, BulkTaskRequest, TaskResult, TaskInfo, TaskStatus,
-    ExportRequest, ExportFormat, APIResponse, HealthCheck, ScraperOptions
+    ExportFormat, APIResponse, HealthCheck, ScraperOptions
 )
 from .tasks import task_manager
 from .exporters import export_task_result, DataExporter

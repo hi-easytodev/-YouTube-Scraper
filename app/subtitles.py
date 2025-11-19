@@ -6,7 +6,7 @@
 import logging
 from typing import List, Optional
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
-from youtube_transcript_api.formatters import SRTFormatter, TextFormatter, JSONFormatter
+from youtube_transcript_api.formatters import SRTFormatter, TextFormatter
 
 from .models import SubtitleData, SubtitleSegment, SubtitleFormat
 

@@ -13,7 +13,7 @@ import yt_dlp
 
 from .models import (
     VideoInfo, ChannelInfo, ScraperOptions, TaskType,
-    SortOrder, VideoType, DateFilter
+    SortOrder, VideoType
 )
 
 # Настройка логирования
@@ -434,15 +434,6 @@ class YouTubeScraper:
 
         try:
             opts = self.yt_dlp_opts.copy()
-
-            # Настраиваем сортировку для поиска
-            sort_mapping = {
-                SortOrder.RELEVANCE: '',
-                SortOrder.DATE_DESC: '',  # По умолчанию
-                SortOrder.DATE_ASC: '',
-                SortOrder.VIEWS: '',
-                SortOrder.RATING: '',
-            }
 
             with yt_dlp.YoutubeDL(opts) as ydl:
                 search_results = ydl.extract_info(search_url, download=False)

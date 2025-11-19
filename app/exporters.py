@@ -6,10 +6,7 @@
 import json
 import csv
 import io
-from datetime import datetime
-from typing import List, Optional
-
-import pandas as pd
+from typing import List
 
 from .models import ScrapedData, TaskResult, ExportFormat
 
