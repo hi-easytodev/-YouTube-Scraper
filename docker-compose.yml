@@ -1,0 +1,33 @@
+# Docker Compose для YouTube Scraper
+# Запуск: docker-compose up -d
+
+version: '3.8'
+
+services:
+  youtube-scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: youtube-scraper
+    ports:
+      - "8000:8000"
+    volumes:
+      # Монтируем директорию для экспорта данных
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Опционально: добавьте Redis для персистентной очереди задач
+#   redis:
+#     image: redis:7-alpine
+#     container_name: youtube-scraper-redis
+#     ports:
+#       - "6379:6379"
+#     restart: unless-stopped
