@@ -59,10 +59,11 @@ class YouTubeScraper:
 
         # Добавляем фильтр по датам если указан
         if self.options.date_filter:
-            if self.options.date_filter.date_from:
-                self.yt_dlp_opts['dateafter'] = self.options.date_filter.date_from.strftime('%Y%m%d')
-            if self.options.date_filter.date_to:
-                self.yt_dlp_opts['datebefore'] = self.options.date_filter.date_to.strftime('%Y%m%d')
+            date_from, date_to = self.options.date_filter.get_date_range()
+            if date_from:
+                self.yt_dlp_opts['dateafter'] = date_from.strftime('%Y%m%d')
+            if date_to:
+                self.yt_dlp_opts['datebefore'] = date_to.strftime('%Y%m%d')
 
     @staticmethod
     def extract_video_id(url: str) -> Optional[str]:
@@ -271,12 +272,15 @@ class YouTubeScraper:
         try:
             upload_date = datetime.strptime(upload_date_str, '%Y%m%d')
 
-            if self.options.date_filter.date_from:
-                if upload_date < self.options.date_filter.date_from:
+            # Получаем диапазон дат (работает и с относительными периодами)
+            date_from, date_to = self.options.date_filter.get_date_range()
+
+            if date_from:
+                if upload_date < date_from:
                     return False
 
-            if self.options.date_filter.date_to:
-                if upload_date > self.options.date_filter.date_to:
+            if date_to:
+                if upload_date > date_to:
                     return False
 
         except (ValueError, TypeError):

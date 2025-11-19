@@ -57,12 +57,76 @@ class ExportFormat(str, Enum):
     CSV = "csv"
 
 
+class DatePeriod(str, Enum):
+    """Относительные периоды для фильтрации по датам"""
+    LAST_HOUR = "last_hour"           # Последний час
+    LAST_24_HOURS = "last_24_hours"   # Последние 24 часа
+    LAST_3_DAYS = "last_3_days"       # Последние 3 дня
+    LAST_WEEK = "last_week"           # Последняя неделя (7 дней)
+    LAST_2_WEEKS = "last_2_weeks"     # Последние 2 недели
+    LAST_MONTH = "last_month"         # Последний месяц (30 дней)
+    LAST_3_MONTHS = "last_3_months"   # Последние 3 месяца
+    LAST_YEAR = "last_year"           # Последний год
+    TODAY = "today"                   # Сегодня
+    THIS_WEEK = "this_week"           # Эта неделя (с понедельника)
+    THIS_MONTH = "this_month"         # Этот месяц
+    CUSTOM = "custom"                 # Пользовательский диапазон
+
+
 # === МОДЕЛИ ВХОДНЫХ ДАННЫХ ===
 
 class DateFilter(BaseModel):
     """Фильтр по датам публикации"""
+    # Относительный период (удобно для расписания)
+    period: Optional[DatePeriod] = Field(None, description="Относительный период (last_week, last_month и т.д.)")
+
+    # Абсолютные даты (для custom периода или точного диапазона)
     date_from: Optional[datetime] = Field(None, description="Начальная дата (включительно)")
     date_to: Optional[datetime] = Field(None, description="Конечная дата (включительно)")
+
+    def get_date_range(self) -> tuple:
+        """
+        Вычисляет диапазон дат на основе периода или абсолютных дат.
+
+        Returns:
+            Кортеж (date_from, date_to)
+        """
+        from datetime import timedelta
+
+        now = datetime.utcnow()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        if self.period and self.period != DatePeriod.CUSTOM:
+            # Относительные периоды
+            if self.period == DatePeriod.LAST_HOUR:
+                return (now - timedelta(hours=1), now)
+            elif self.period == DatePeriod.LAST_24_HOURS:
+                return (now - timedelta(days=1), now)
+            elif self.period == DatePeriod.LAST_3_DAYS:
+                return (now - timedelta(days=3), now)
+            elif self.period == DatePeriod.LAST_WEEK:
+                return (now - timedelta(days=7), now)
+            elif self.period == DatePeriod.LAST_2_WEEKS:
+                return (now - timedelta(days=14), now)
+            elif self.period == DatePeriod.LAST_MONTH:
+                return (now - timedelta(days=30), now)
+            elif self.period == DatePeriod.LAST_3_MONTHS:
+                return (now - timedelta(days=90), now)
+            elif self.period == DatePeriod.LAST_YEAR:
+                return (now - timedelta(days=365), now)
+            elif self.period == DatePeriod.TODAY:
+                return (today, now)
+            elif self.period == DatePeriod.THIS_WEEK:
+                # Понедельник текущей недели
+                monday = today - timedelta(days=today.weekday())
+                return (monday, now)
+            elif self.period == DatePeriod.THIS_MONTH:
+                # Первый день месяца
+                first_day = today.replace(day=1)
+                return (first_day, now)
+
+        # Абсолютные даты
+        return (self.date_from, self.date_to)
 
 
 class ScraperOptions(BaseModel):
